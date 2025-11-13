@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Poppins, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import StructuredData from '@/components/StructuredData'
@@ -120,6 +121,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-body antialiased`}>
         {children}
+        <Analytics />
         <Toaster 
           position="top-center"
           toastOptions={{
