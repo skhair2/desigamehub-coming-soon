@@ -1,6 +1,6 @@
-# Setup Guide - DesiGameHub Coming Soon Page
+# Setup Guide - DesiPlayground Coming Soon Page
 
-This guide will walk you through setting up the DesiGameHub coming soon landing page from scratch.
+This guide will walk you through setting up the DesiPlayground coming soon landing page from scratch.
 
 ## Prerequisites Checklist
 
@@ -51,7 +51,7 @@ Create a `.env.local` file in the project root:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-NEXT_PUBLIC_SITE_URL=https://desigamehub.com
+NEXT_PUBLIC_SITE_URL=https://DesiPlayground.com
 ```
 
 **Important**: Never commit `.env.local` to Git (it's in `.gitignore`)
@@ -78,7 +78,7 @@ Open [http://localhost:3000](http://localhost:3000)
 Create an image at `public/og-image.jpg`:
 - Dimensions: 1200x630px
 - Format: JPG or PNG
-- Content: DesiGameHub branding with tagline
+- Content: DesiPlayground branding with tagline
 
 #### Update Social Links
 
@@ -103,7 +103,7 @@ Review and update:
    git init
    git add .
    git commit -m "Initial commit"
-   git remote add origin https://github.com/yourusername/desigamehub-coming-soon.git
+   git remote add origin https://github.com/yourusername/DesiPlayground-coming-soon.git
    git push -u origin main
    ```
 

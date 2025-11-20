@@ -9,7 +9,7 @@ export default function TermsOfService() {
       <div className="bg-gradient-primary/10 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
         <div className="container-custom py-4">
           <a href="/" className="text-xl font-bold text-transparent bg-gradient-primary bg-clip-text">
-            DesiGameHub
+            DesiPlayground
           </a>
         </div>
       </div>
@@ -30,7 +30,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">1. Agreement to Terms</h2>
               <p className="text-gray-300">
-                By accessing and using DesiGameHub, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using DesiPlayground, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
             </section>
 
@@ -38,7 +38,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">2. User Eligibility</h2>
               <p className="text-gray-300">
-                DesiGameHub is intended for users aged 13 and above. By using our service, you represent and warrant that you are at least 13 years of age. If you are under 18, you represent that you have parental or guardian consent to use DesiGameHub.
+                DesiPlayground is intended for users aged 13 and above. By using our service, you represent and warrant that you are at least 13 years of age. If you are under 18, you represent that you have parental or guardian consent to use DesiPlayground.
               </p>
             </section>
 
@@ -46,7 +46,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">3. License & Permitted Use</h2>
               <p className="text-gray-300 mb-3">
-                DesiGameHub grants you a limited, non-exclusive, non-transferable license to use our platform for personal, non-commercial purposes. You agree not to:
+                DesiPlayground grants you a limited, non-exclusive, non-transferable license to use our platform for personal, non-commercial purposes. You agree not to:
               </p>
               <ul className="text-gray-300 space-y-2 list-disc list-inside">
                 <li>Reproduce, modify, or distribute any content without permission</li>
@@ -61,7 +61,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">4. Disclaimer of Warranties</h2>
               <p className="text-gray-300">
-                DesiGameHub is provided on an &quot;AS IS&quot; basis without warranties of any kind, either express or implied. We do not warrant that our service will be:
+                DesiPlayground is provided on an &quot;AS IS&quot; basis without warranties of any kind, either express or implied. We do not warrant that our service will be:
               </p>
               <ul className="text-gray-300 space-y-2 list-disc list-inside mt-2">
                 <li>Uninterrupted or error-free</li>
@@ -74,7 +74,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">5. Limitation of Liability</h2>
               <p className="text-gray-300">
-                To the maximum extent permitted by law, DesiGameHub shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our service, even if we have been advised of the possibility of such damages.
+                To the maximum extent permitted by law, DesiPlayground shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of our service, even if we have been advised of the possibility of such damages.
               </p>
             </section>
 
@@ -82,7 +82,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">6. User Content & Rights</h2>
               <p className="text-gray-300">
-                By uploading or submitting content to DesiGameHub, you grant us a non-exclusive, royalty-free license to use that content for platform improvement and operation. You retain ownership of your content and warrant that it does not infringe on third-party rights.
+                By uploading or submitting content to DesiPlayground, you grant us a non-exclusive, royalty-free license to use that content for platform improvement and operation. You retain ownership of your content and warrant that it does not infringe on third-party rights.
               </p>
             </section>
 
@@ -90,7 +90,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">7. Intellectual Property</h2>
               <p className="text-gray-300">
-                All content, features, and functionality on DesiGameHub (including graphics, logos, and code) are owned by DesiGameHub or our licensors and are protected by international copyright, trademark, and other intellectual property laws.
+                All content, features, and functionality on DesiPlayground (including graphics, logos, and code) are owned by DesiPlayground or our licensors and are protected by international copyright, trademark, and other intellectual property laws.
               </p>
             </section>
 
@@ -113,7 +113,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">9. Termination</h2>
               <p className="text-gray-300">
-                We reserve the right to terminate or suspend your account and access to DesiGameHub at any time for violations of these terms or for any reason, with or without notice.
+                We reserve the right to terminate or suspend your account and access to DesiPlayground at any time for violations of these terms or for any reason, with or without notice.
               </p>
             </section>
 
@@ -140,8 +140,8 @@ export default function TermsOfService() {
                 If you have questions about these Terms of Service, please contact us:
               </p>
               <div className="text-gray-300 mt-2 space-y-1">
-                <p><strong>Email:</strong> support@desigamehub.com</p>
-                <p><strong>Website:</strong> desigamehub.com</p>
+                <p><strong>Email:</strong> support@DesiPlayground.com</p>
+                <p><strong>Website:</strong> DesiPlayground.com</p>
               </div>
             </section>
           </div>

@@ -2,13 +2,13 @@
  * Image Alt Tags & SEO Optimization Guide
  * 
  * This file contains recommended alt tags and image attributes for all images
- * used in DesiGameHub to maximize SEO value and accessibility.
+ * used in DesiPlayground to maximize SEO value and accessibility.
  */
 
 export const imageAltTags = {
   hero: {
-    mainImage: 'Play desi games online with friends on DesiGameHub - Multiplayer Ludo, Tambola, and Charades platform',
-    bgGradient: 'DesiGameHub gaming platform background',
+    mainImage: 'Play desi games online with friends on DesiPlayground - Multiplayer Ludo, Tambola, and Charades platform',
+    bgGradient: 'DesiPlayground gaming platform background',
     featurePills: {
       multiplayer: 'Multiplayer gaming feature icon',
       instant: 'Instant play without signup feature',
@@ -23,23 +23,23 @@ export const imageAltTags = {
   },
 
   solutionSection: {
-    mainImage: 'DesiGameHub unified solution for playing desi games online with friends',
-    storyImage: 'DesiGameHub community playing multiplayer games together',
+    mainImage: 'DesiPlayground unified solution for playing desi games online with friends',
+    storyImage: 'DesiPlayground community playing multiplayer games together',
   },
 
   howItWorks: {
-    step1: 'Sign up on DesiGameHub - Play desi games online',
+    step1: 'Sign up on DesiPlayground - Play desi games online',
     step2: 'Create a game lobby for tambola or other desi games',
     step3: 'Invite friends and start playing instantly',
     icons: {
-      signup: 'Sign up icon for DesiGameHub registration',
+      signup: 'Sign up icon for DesiPlayground registration',
       create: 'Create game lobby icon',
       play: 'Start playing icon',
     },
   },
 
   features: {
-    feature1: 'Real-time multiplayer games on DesiGameHub',
+    feature1: 'Real-time multiplayer games on DesiPlayground',
     feature2: 'Mobile-friendly desi games platform',
     feature3: 'Host private game lobbies for friends',
     feature4: 'Instant matchmaking for online games',
@@ -48,50 +48,50 @@ export const imageAltTags = {
   },
 
   gamesShowcase: {
-    ludoCard: 'Play Ludo online on DesiGameHub - Classic Indian board game multiplayer',
+    ludoCard: 'Play Ludo online on DesiPlayground - Classic Indian board game multiplayer',
     ludoIcon: 'Ludo board game icon',
     ludoFeatures: 'Ludo features: Real-time multiplayer, Quick matches, Ranking system',
     
-    tambolaCard: 'Play Tambola online on DesiGameHub - Indian housie game multiplayer',
+    tambolaCard: 'Play Tambola online on DesiPlayground - Indian housie game multiplayer',
     tambolaIcon: 'Tambola housie game icon',
     tambolaFeatures: 'Tambola features: Quick rounds, Exciting prizes, Community play',
     
-    charadeCard: 'Play Dumb Charades online on DesiGameHub - Bollywood themed games',
+    charadeCard: 'Play Dumb Charades online on DesiPlayground - Bollywood themed games',
     charadeIcon: 'Dumb Charades game icon',
     charadeFeatures: 'Charades features: Instant fun, Friendship focused, No setup needed',
 
     statusBadges: {
-      available: 'Available now on DesiGameHub',
-      comingSoon: 'Coming soon to DesiGameHub',
+      available: 'Available now on DesiPlayground',
+      comingSoon: 'Coming soon to DesiPlayground',
     },
   },
 
   faqSection: {
-    accordionIcons: 'Frequently asked questions about DesiGameHub - Expand for answers',
-    supportButton: 'Contact DesiGameHub support team',
+    accordionIcons: 'Frequently asked questions about DesiPlayground - Expand for answers',
+    supportButton: 'Contact DesiPlayground support team',
   },
 
   waitlistSection: {
-    mainCTA: 'Join DesiGameHub waitlist - Get early access to play desi games online',
-    bonusList: 'Early access benefits for DesiGameHub waitlist members',
+    mainCTA: 'Join DesiPlayground waitlist - Get early access to play desi games online',
+    bonusList: 'Early access benefits for DesiPlayground waitlist members',
     checkmarkIcon: 'Included benefit for waitlist members',
   },
 
   footer: {
-    logo: 'DesiGameHub - Play desi games online',
+    logo: 'DesiPlayground - Play desi games online',
     socialIcons: {
-      facebook: 'DesiGameHub Facebook page',
-      instagram: 'DesiGameHub Instagram profile',
-      twitter: 'DesiGameHub Twitter account',
-      discord: 'DesiGameHub Discord community',
+      facebook: 'DesiPlayground Facebook page',
+      instagram: 'DesiPlayground Instagram profile',
+      twitter: 'DesiPlayground Twitter account',
+      discord: 'DesiPlayground Discord community',
     },
   },
 
   general: {
-    brandLogo: 'DesiGameHub logo - Desi games online platform',
-    favicon: 'DesiGameHub favicon',
-    ogImage: 'DesiGameHub - Play the best desi games online with friends and family',
-    twitterImage: 'DesiGameHub social media preview - Multiplayer desi games',
+    brandLogo: 'DesiPlayground logo - Desi games online platform',
+    favicon: 'DesiPlayground favicon',
+    ogImage: 'DesiPlayground - Play the best desi games online with friends and family',
+    twitterImage: 'DesiPlayground social media preview - Multiplayer desi games',
   },
 };
 
@@ -207,10 +207,10 @@ export const imageSchemaMarkup = {
   example: {
     '@context': 'https://schema.org',
     '@type': 'ImageObject',
-    'name': 'DesiGameHub Ludo Online Game',
-    'description': 'Play Ludo online with friends on DesiGameHub multiplayer platform',
-    'url': 'https://desigamehub.com/images/game-ludo-online.webp',
-    'creditText': 'DesiGameHub',
+    'name': 'DesiPlayground Ludo Online Game',
+    'description': 'Play Ludo online with friends on DesiPlayground multiplayer platform',
+    'url': 'https://DesiPlayground.com/images/game-ludo-online.webp',
+    'creditText': 'DesiPlayground',
     'width': '400',
     'height': '300',
   },

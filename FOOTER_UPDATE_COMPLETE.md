@@ -31,23 +31,23 @@
 #### Community Section (Now Working)
 | Link | Before | After |
 |------|--------|-------|
-| Contact | `#` (broken) | `mailto:support@desigamehub.com` |
-| Support | `#` (broken) | `mailto:support@desigamehub.com` |
+| Contact | `#` (broken) | `mailto:support@DesiPlayground.com` |
+| Support | `#` (broken) | `mailto:support@DesiPlayground.com` |
 | FAQ | `#` (broken) | `#faq` (working) |
 
 #### About Section (Now Working)
 | Link | Before | After |
 |------|--------|-------|
-| Press Kit | `#` (broken) | `mailto:press@desigamehub.com` |
+| Press Kit | `#` (broken) | `mailto:press@DesiPlayground.com` |
 
 #### Social Links (Now Working)
 | Social | Before | After |
 |--------|--------|-------|
-| Instagram | `#` (broken) | `https://instagram.com/desigamehub` |
-| Facebook | `#` (broken) | `https://facebook.com/desigamehub` |
-| TikTok | `#` (broken) | `https://tiktok.com/@desigamehub` |
-| YouTube | `#` (broken) | `https://youtube.com/@desigamehub` |
-| Twitter | `#` (broken) | `https://twitter.com/desigamehub` |
+| Instagram | `#` (broken) | `https://instagram.com/DesiPlayground` |
+| Facebook | `#` (broken) | `https://facebook.com/DesiPlayground` |
+| TikTok | `#` (broken) | `https://tiktok.com/@DesiPlayground` |
+| YouTube | `#` (broken) | `https://youtube.com/@DesiPlayground` |
+| Twitter | `#` (broken) | `https://twitter.com/DesiPlayground` |
 
 ---
 
@@ -102,15 +102,15 @@ Created: app/terms/page.tsx
 ## All Footer Links Status
 
 ### ✅ Working Links
-- About DesiGameHub → `#solution` (scrolls to section)
+- About DesiPlayground → `#solution` (scrolls to section)
 - Our Mission → `#solution` (scrolls to section)
-- Press Kit → Email (mailto:press@desigamehub.com)
+- Press Kit → Email (mailto:press@DesiPlayground.com)
 - Tambola → `#games` (scrolls to games section)
 - Charades → `#games` (scrolls to games section)
 - Codenames → `#games` (scrolls to games section)
 - Coming Soon → `#games` (scrolls to games section)
-- Contact → Email (mailto:support@desigamehub.com)
-- Support → Email (mailto:support@desigamehub.com)
+- Contact → Email (mailto:support@DesiPlayground.com)
+- Support → Email (mailto:support@DesiPlayground.com)
 - FAQ → `#faq` (scrolls to FAQ section)
 - **Privacy Policy → `/privacy` (new page)**
 - **Terms of Service → `/terms` (new page)**

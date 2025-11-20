@@ -1,4 +1,4 @@
-# SEO Quick Reference Card - DesiGameHub
+# SEO Quick Reference Card - DesiPlayground
 
 ## 🚀 Quick Start (5 Minutes)
 
@@ -35,7 +35,7 @@ npm run start
 1. `desi games online`
 2. `play desi games online`
 3. `best desi games`
-4. `DesiGameHub`
+4. `DesiPlayground`
 5. `multiplayer desi games`
 
 **Target Rankings**: Page 1 within 8 weeks
@@ -121,7 +121,7 @@ lib/imageOptimization.ts       → Image best practices
 ```
 Test your website on mobile:
 1. Visit: google.com/webmasters/tools/mobile-friendly
-2. Enter: desigamehub.com
+2. Enter: DesiPlayground.com
 3. Should show: "Page is mobile friendly" ✓
 ```
 
@@ -131,7 +131,7 @@ Test your website on mobile:
 
 ```
 Go to: https://search.google.com/test/rich-results
-Enter: https://desigamehub.com
+Enter: https://DesiPlayground.com
 Check these show green ✓:
 - Organization
 - FAQ

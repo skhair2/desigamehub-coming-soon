@@ -1,8 +1,8 @@
-# DesiGameHub Coming Soon Page - Project Summary
+# DesiPlayground Coming Soon Page - Project Summary
 
 ## 🎉 Project Complete!
 
-A fully functional, SEO-optimized "Coming Soon" landing page has been created for DesiGameHub, following all brand guidelines and incorporating target SEO keywords.
+A fully functional, SEO-optimized "Coming Soon" landing page has been created for DesiPlayground, following all brand guidelines and incorporating target SEO keywords.
 
 ## ✅ What Was Built
 

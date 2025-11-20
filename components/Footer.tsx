@@ -4,9 +4,9 @@ import { motion } from 'framer-motion'
 
 const footerLinks = {
   about: [
-    { label: 'About DesiGameHub', href: '#solution' },
+    { label: 'About DesiPlayground', href: '#solution' },
     { label: 'Our Mission', href: '#solution' },
-    { label: 'Press Kit', href: 'mailto:support@desigamehub.com' },
+    { label: 'Press Kit', href: 'mailto:support@DesiPlayground.com' },
   ],
   games: [
     { label: 'Tambola', href: '#games' },
@@ -15,8 +15,8 @@ const footerLinks = {
     { label: 'Coming Soon', href: '#games' },
   ],
   community: [
-    { label: 'Contact', href: 'mailto:support@desigamehub.com' },
-    { label: 'Support', href: 'mailto:support@desigamehub.com' },
+    { label: 'Contact', href: 'mailto:support@DesiPlayground.com' },
+    { label: 'Support', href: 'mailto:support@DesiPlayground.com' },
     { label: 'FAQ', href: '#faq' },
   ],
   legal: [
@@ -26,11 +26,11 @@ const footerLinks = {
 }
 
 const socialLinks = [
-  { name: 'Instagram', icon: '📷', href: 'https://instagram.com/desigamehub' },
-  { name: 'Facebook', icon: '👥', href: 'https://facebook.com/desigamehub' },
-  { name: 'TikTok', icon: '🎵', href: 'https://tiktok.com/@desigamehub' },
-  { name: 'YouTube', icon: '▶️', href: 'https://youtube.com/@desigamehub' },
-  { name: 'Twitter', icon: '🐦', href: 'https://twitter.com/desigamehub' },
+  { name: 'Instagram', icon: '📷', href: 'https://instagram.com/DesiPlayground' },
+  { name: 'Facebook', icon: '👥', href: 'https://facebook.com/DesiPlayground' },
+  { name: 'TikTok', icon: '🎵', href: 'https://tiktok.com/@DesiPlayground' },
+  { name: 'YouTube', icon: '▶️', href: 'https://youtube.com/@DesiPlayground' },
+  { name: 'Twitter', icon: '🐦', href: 'https://twitter.com/DesiPlayground' },
 ]
 
 export default function Footer() {
@@ -141,7 +141,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-cream/20 pt-8 text-center">
           <p className="font-body text-cream/60">
-            © {new Date().getFullYear()} DesiGameHub. All rights reserved.
+            © {new Date().getFullYear()} DesiPlayground. All rights reserved.
           </p>
           <p className="font-body text-cream/60 mt-2">
             Made with ❤️ for families everywhere.

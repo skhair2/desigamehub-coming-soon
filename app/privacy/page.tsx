@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
       <div className="bg-gradient-primary/10 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
         <div className="container-custom py-4">
           <a href="/" className="text-xl font-bold text-transparent bg-gradient-primary bg-clip-text">
-            DesiGameHub
+            DesiPlayground
           </a>
         </div>
       </div>
@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
               <p className="text-gray-300">
-                Welcome to DesiGameHub (&quot;Company,&quot; &quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your privacy and ensuring you have a positive experience on our website and services. This Privacy Policy explains our data practices and your rights regarding your personal information.
+                Welcome to DesiPlayground (&quot;Company,&quot; &quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your privacy and ensuring you have a positive experience on our website and services. This Privacy Policy explains our data practices and your rights regarding your personal information.
               </p>
             </section>
 
@@ -63,7 +63,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">3. How We Use Your Information</h2>
               <ul className="text-gray-300 space-y-2 list-disc list-inside">
-                <li>To send you updates about DesiGameHub and new games</li>
+                <li>To send you updates about DesiPlayground and new games</li>
                 <li>To improve our platform and user experience</li>
                 <li>To respond to your inquiries and provide support</li>
                 <li>To comply with legal obligations</li>
@@ -107,8 +107,8 @@ export default function PrivacyPolicy() {
                 If you have questions about this Privacy Policy or our data practices, please contact us:
               </p>
               <div className="text-gray-300 mt-2 space-y-1">
-                <p><strong>Email:</strong> support@desigamehub.com</p>
-                <p><strong>Website:</strong> desigamehub.com</p>
+                <p><strong>Email:</strong> support@DesiPlayground.com</p>
+                <p><strong>Website:</strong> DesiPlayground.com</p>
               </div>
             </section>
 
@@ -116,7 +116,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">7. Policy Updates</h2>
               <p className="text-gray-300">
-                We may update this Privacy Policy from time to time. We will notify you of significant changes via email or by updating the date at the top of this policy. Your continued use of DesiGameHub constitutes acceptance of the updated policy.
+                We may update this Privacy Policy from time to time. We will notify you of significant changes via email or by updating the date at the top of this policy. Your continued use of DesiPlayground constitutes acceptance of the updated policy.
               </p>
             </section>
           </div>

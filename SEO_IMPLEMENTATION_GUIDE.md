@@ -1,9 +1,9 @@
-# DesiGameHub SEO Optimization Guide
+# DesiPlayground SEO Optimization Guide
 
 ## ✅ Optimizations Implemented
 
 ### 1. **Enhanced Meta Tags & Keywords**
-- Updated title with primary keywords: "DesiGameHub", "Desi Games Online", "Indian Party Games"
+- Updated title with primary keywords: "DesiPlayground", "Desi Games Online", "Indian Party Games"
 - Expanded meta description to include key benefits
 - Added 24 targeted keywords covering all search intents:
   - Primary: `desi games online`, `play desi games online`, `best desi games`
@@ -41,14 +41,14 @@ Already optimized with:
 
 ### Immediate Actions (Quick Wins)
 - [ ] Add images with SEO-optimized alt tags:
-  - Hero image: `alt="Play desi games online on DesiGameHub - Ludo, Tambola, Charades"`
-  - Game cards: `alt="[Game Name] multiplayer game on DesiGameHub"`
-  - Screenshots: `alt="[Game Name] gameplay screenshot - DesiGameHub"`
+  - Hero image: `alt="Play desi games online on DesiPlayground - Ludo, Tambola, Charades"`
+  - Game cards: `alt="[Game Name] multiplayer game on DesiPlayground"`
+  - Screenshots: `alt="[Game Name] gameplay screenshot - DesiPlayground"`
 
 - [ ] Optimize Hero section copy:
   ```
   Add more keyword-rich headlines and descriptions
-  Example: "Play the Best Free Desi Games Online | DesiGameHub Multiplayer Platform"
+  Example: "Play the Best Free Desi Games Online | DesiPlayground Multiplayer Platform"
   ```
 
 - [ ] Add internal linking strategy:
@@ -71,7 +71,7 @@ Already optimized with:
   - "CodeNames Tips & Tricks"
 
 - [ ] Set up Google Search Console:
-  - Add property for desigamehub.com
+  - Add property for DesiPlayground.com
   - Monitor search performance
   - Fix any crawl issues
   - Submit sitemap
@@ -290,7 +290,7 @@ Before going live:
 ## 💡 Advanced SEO Tips
 
 1. **Entity Optimization**
-   - Define DesiGameHub as an entity
+   - Define DesiPlayground as an entity
    - Link to Wikipedia pages for games
    - Build topical authority
 

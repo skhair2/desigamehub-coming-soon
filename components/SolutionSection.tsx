@@ -20,7 +20,7 @@ export default function SolutionSection() {
           className="text-center max-w-4xl mx-auto"
         >
           <h2 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl mb-6">
-            Meet DesiGameHub
+            Meet DesiPlayground
           </h2>
           <p className="font-heading text-xl sm:text-2xl mb-8 text-cream/90">
             Same games. Modern tech. Zero friction.

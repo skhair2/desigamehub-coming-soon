@@ -52,5 +52,5 @@ CREATE TRIGGER update_subscribers_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- Add comment to table
-COMMENT ON TABLE subscribers IS 'Email waitlist subscribers for DesiGameHub coming soon page';
+COMMENT ON TABLE subscribers IS 'Email waitlist subscribers for DesiPlayground coming soon page';
 

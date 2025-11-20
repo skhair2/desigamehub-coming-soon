@@ -32,13 +32,13 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'DesiGameHub - Play Best Desi Games Online | Tambola, Carrom & Indian Party Games',
-  description: 'Discover the best desi games online at DesiGameHub. Play multiplayer Ludo, Carrom, Tambola, Charades & more. Free Indian online games for friends & family. Join tournaments, earn rewards. Mobile-friendly & secure.',
+  title: 'DesiPlayground - Play Best Desi Games Online | Tambola, Carrom & Indian Party Games',
+  description: 'Discover the best desi games online at DesiPlayground. Play multiplayer Ludo, Carrom, Tambola, Charades & more. Free Indian online games for friends & family. Join tournaments, earn rewards. Mobile-friendly & secure.',
   keywords: [
     'desi games online',
     'play desi games online',
     'best desi games',
-    'DesiGameHub',
+    'DesiPlayground',
     'tambola online lobby',
     'online dumb charades',
     'desi codenames game',
@@ -59,29 +59,29 @@ export const metadata: Metadata = {
     'desi game night',
     'diwali game night',
   ],
-  authors: [{ name: 'DesiGameHub' }],
-  creator: 'DesiGameHub',
-  publisher: 'DesiGameHub',
+  authors: [{ name: 'Desiplayground' }],
+  creator: 'Desiplayground',
+  publisher: 'Desiplayground',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://desigamehub.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://Desiplayground.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'DesiGameHub - Play Tambola Online with Friends | Indian Family Party Games',
+    title: 'Desiplayground - Play Tambola Online with Friends | Indian Family Party Games',
     description: 'Play desi games online with friends and family. Join tambola online lobby, host tambola game, or play online dumb charades. Real-time multiplayer desi games for NRIs and families worldwide.',
-    url: 'https://desigamehub.com',
-    siteName: 'DesiGameHub',
+    url: 'https://Desiplayground.com',
+    siteName: 'Desiplayground',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'DesiGameHub - Play Desi Games Online',
+        alt: 'Desiplayground - Play Desi Games Online',
       },
     ],
     locale: 'en_US',
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DesiGameHub - Play Tambola Online with Friends',
+    title: 'Desiplayground - Play Tambola Online with Friends',
     description: 'Play desi games online with friends and family. Real-time multiplayer desi games for NRIs and families worldwide.',
     images: ['/og-image.jpg'],
   },

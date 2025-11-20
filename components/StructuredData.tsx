@@ -1,25 +1,25 @@
 export default function StructuredData() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://desigamehub.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://DesiPlayground.com'
 
   // Organization Schema
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'DesiGameHub',
+    name: 'DesiPlayground',
     url: baseUrl,
     logo: `${baseUrl}/logo.png`,
     description: 'The ultimate platform for playing Desi games online with friends and family',
     sameAs: [
-      'https://facebook.com/desigamehub',
-      'https://instagram.com/desigamehub',
-      'https://twitter.com/desigamehub',
-      'https://discord.com/invite/desigamehub',
+      'https://facebook.com/DesiPlayground',
+      'https://instagram.com/DesiPlayground',
+      'https://twitter.com/DesiPlayground',
+      'https://discord.com/invite/DesiPlayground',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+1-XXX-XXX-XXXX',
       contactType: 'Customer Support',
-      email: 'support@desigamehub.com',
+      email: 'support@DesiPlayground.com',
     },
   }
 
@@ -27,7 +27,7 @@ export default function StructuredData() {
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'DesiGameHub',
+    name: 'DesiPlayground',
     url: baseUrl,
     description: 'Play the best desi games online - Tambola, Carrom, Charades, Codenames & more',
     potentialAction: {
@@ -46,10 +46,10 @@ export default function StructuredData() {
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'Is DesiGameHub completely free?',
+        name: 'Is DesiPlayground completely free?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Yes! All games on DesiGameHub are 100% free to play. We offer optional cosmetic purchases, but all gameplay is accessible without spending money.',
+          text: 'Yes! All games on DesiPlayground are 100% free to play. We offer optional cosmetic purchases, but all gameplay is accessible without spending money.',
         },
       },
       {
@@ -57,7 +57,7 @@ export default function StructuredData() {
         name: 'Can I play on mobile devices?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Absolutely! DesiGameHub is fully responsive and optimized for all devices – smartphones, tablets, and desktop computers.',
+          text: 'Absolutely! DesiPlayground is fully responsive and optimized for all devices – smartphones, tablets, and desktop computers.',
         },
       },
       {
@@ -70,7 +70,7 @@ export default function StructuredData() {
       },
       {
         '@type': 'Question',
-        name: 'Is my data secure on DesiGameHub?',
+        name: 'Is my data secure on DesiPlayground?',
         acceptedAnswer: {
           '@type': 'Answer',
           text: 'Yes. We use HTTPS encryption, industry-standard security protocols, and never share your personal data with third parties.',
@@ -93,7 +93,7 @@ export default function StructuredData() {
     '@type': 'Game',
     name: 'Ludo Online',
     url: `${baseUrl}/#games`,
-    description: 'Play multiplayer Ludo online with friends on DesiGameHub',
+    description: 'Play multiplayer Ludo online with friends on DesiPlayground',
     genre: 'board game',
     gamePlatform: 'Web Browser',
     applicationCategory: 'GameApplication',
@@ -109,7 +109,7 @@ export default function StructuredData() {
     '@type': 'Game',
     name: 'Tambola Online',
     url: `${baseUrl}/#games`,
-    description: 'Play Tambola/Housie online with friends and family on DesiGameHub',
+    description: 'Play Tambola/Housie online with friends and family on DesiPlayground',
     genre: 'board game',
     gamePlatform: 'Web Browser',
     applicationCategory: 'GameApplication',
@@ -125,7 +125,7 @@ export default function StructuredData() {
     '@type': 'Game',
     name: 'Dumb Charades Online',
     url: `${baseUrl}/#games`,
-    description: 'Play online dumb charades with friends on DesiGameHub',
+    description: 'Play online dumb charades with friends on DesiPlayground',
     genre: 'party game',
     gamePlatform: 'Web Browser',
     applicationCategory: 'GameApplication',

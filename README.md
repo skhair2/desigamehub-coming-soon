@@ -1,13 +1,13 @@
-# DesiGameHub - Coming Soon Landing Page
+# DesiPlayground - Coming Soon Landing Page
 
-A modern, SEO-optimized "Coming Soon" landing page for DesiGameHub, built with Next.js 14, TypeScript, Tailwind CSS, and Supabase.
+A modern, SEO-optimized "Coming Soon" landing page for DesiPlayground, built with Next.js 14, TypeScript, Tailwind CSS, and Supabase.
 
 ## 🎯 Features
 
 - **Modern Design**: Beautiful, responsive landing page with smooth animations using Framer Motion
 - **SEO Optimized**: Comprehensive meta tags, Open Graph data, sitemap, and robots.txt
 - **Email Waitlist**: Supabase-powered subscription system with validation
-- **Brand Compliant**: Follows DesiGameHub brand guidelines (colors, typography, tone)
+- **Brand Compliant**: Follows DesiPlayground brand guidelines (colors, typography, tone)
 - **Accessibility**: WCAG AAA compliant with proper focus states and semantic HTML
 - **Performance**: Optimized for Core Web Vitals and fast loading
 
@@ -100,7 +100,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🎨 Brand Colors
 
-The project uses DesiGameHub brand colors defined in `tailwind.config.js`:
+The project uses DesiPlayground brand colors defined in `tailwind.config.js`:
 
 - **Saffron**: `#FF6B35` - Primary CTA color
 - **Royal Purple**: `#8B2CA0` - Secondary accents
@@ -251,7 +251,7 @@ This project is proprietary and confidential. All rights reserved.
 
 ## 🤝 Support
 
-For questions or issues, contact the DesiGameHub development team.
+For questions or issues, contact the DesiPlayground development team.
 
 ---
 

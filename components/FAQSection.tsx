@@ -10,14 +10,14 @@ interface FAQItem {
 
 const faqItems: FAQItem[] = [
   {
-    question: 'Is DesiGameHub completely free?',
+    question: 'Is DesiPlayground completely free?',
     answer:
-      'Yes! All games on DesiGameHub are 100% free to play. We offer optional cosmetic purchases and premium features, but all core gameplay is completely free and accessible to everyone.',
+      'Yes! All games on DesiPlayground are 100% free to play. We offer optional cosmetic purchases and premium features, but all core gameplay is completely free and accessible to everyone.',
   },
   {
     question: 'Can I play on mobile devices?',
     answer:
-      'Absolutely! DesiGameHub is fully responsive and optimized for all devices – smartphones, tablets, and desktop computers. Experience the same smooth gameplay on any device.',
+      'Absolutely! DesiPlayground is fully responsive and optimized for all devices – smartphones, tablets, and desktop computers. Experience the same smooth gameplay on any device.',
   },
   {
     question: 'Can I play against my friends?',
@@ -25,7 +25,7 @@ const faqItems: FAQItem[] = [
       'Yes! Invite friends via a unique game code, or join multiplayer lobbies to find opponents in real-time. Our instant matchmaking ensures you find players quickly.',
   },
   {
-    question: 'Is my data secure on DesiGameHub?',
+    question: 'Is my data secure on DesiPlayground?',
     answer:
       'Yes. We use HTTPS encryption, industry-standard security protocols, and never share your personal data with third parties. Your privacy and security are our top priority.',
   },
@@ -98,7 +98,7 @@ export default function FAQSection() {
             <span className="bg-gradient-primary bg-clip-text text-transparent">Frequently Asked Questions</span>
           </h2>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Everything you need to know about DesiGameHub. Have more questions? Reach out to our support team.
+            Everything you need to know about DesiPlayground. Have more questions? Reach out to our support team.
           </p>
         </motion.div>
 
@@ -161,7 +161,7 @@ export default function FAQSection() {
             Still have questions? We&apos;re here to help!
           </p>
           <a
-            href="mailto:support@desigamehub.com"
+            href="mailto:support@DesiPlayground.com"
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-primary text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-saffron/50 transition-all"
           >
             Contact Support
