@@ -30,15 +30,19 @@ async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining
       const newCount = existing.requests_count + 1
       const allowed = newCount <= RATE_LIMIT_MAX_REQUESTS
 
-      await supabase
+      const { error: updateError } = await supabase
         .from('api_rate_limits')
         .update({ requests_count: newCount })
         .eq('id', existing.id)
 
+      if (updateError) {
+        console.error('Rate limit update error:', updateError)
+      }
+
       return { allowed, remaining: Math.max(0, RATE_LIMIT_MAX_REQUESTS - newCount) }
     } else {
       // First request in this window
-      await supabase
+      const { error: insertError } = await supabase
         .from('api_rate_limits')
         .insert({
           endpoint: '/api/subscribe',
@@ -47,6 +51,11 @@ async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining
           window_start: now.toISOString(),
           window_end: new Date(now.getTime() + RATE_LIMIT_WINDOW_MINUTES * 60000).toISOString(),
         })
+
+      if (insertError) {
+        console.error('Rate limit insert error:', insertError)
+        // Still allow the request even if logging fails
+      }
 
       return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1 }
     }
