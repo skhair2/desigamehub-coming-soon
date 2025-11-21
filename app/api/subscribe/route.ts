@@ -1,8 +1,105 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+// Rate limiting constants
+const RATE_LIMIT_MAX_REQUESTS = 5 // requests per window
+const RATE_LIMIT_WINDOW_MINUTES = 60 // 1 hour window
+
+async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining: number }> {
+  try {
+    const now = new Date()
+    const windowStart = new Date(now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60000)
+
+    // Get current request count
+    const { data: existing, error: getError } = await supabase
+      .from('api_rate_limits')
+      .select('requests_count, id')
+      .eq('endpoint', '/api/subscribe')
+      .eq('ip_address', ip)
+      .gte('window_start', windowStart.toISOString())
+      .single()
+
+    if (getError && getError.code !== 'PGRST116') {
+      console.error('Rate limit check error:', getError)
+      // Default to allowing on error to prevent blocking users
+      return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS }
+    }
+
+    if (existing) {
+      // Update request count
+      const newCount = existing.requests_count + 1
+      const allowed = newCount <= RATE_LIMIT_MAX_REQUESTS
+
+      await supabase
+        .from('api_rate_limits')
+        .update({ requests_count: newCount })
+        .eq('id', existing.id)
+
+      return { allowed, remaining: Math.max(0, RATE_LIMIT_MAX_REQUESTS - newCount) }
+    } else {
+      // First request in this window
+      await supabase
+        .from('api_rate_limits')
+        .insert({
+          endpoint: '/api/subscribe',
+          ip_address: ip,
+          requests_count: 1,
+          window_start: now.toISOString(),
+          window_end: new Date(now.getTime() + RATE_LIMIT_WINDOW_MINUTES * 60000).toISOString(),
+        })
+
+      return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1 }
+    }
+  } catch (error) {
+    console.error('Rate limit error:', error)
+    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS }
+  }
+}
+
+async function logActivity(email: string, action: string, ip: string, userAgent: string, subscriberId?: string) {
+  try {
+    if (subscriberId) {
+      await supabase
+        .from('subscription_activity')
+        .insert({
+          subscriber_id: subscriberId,
+          action,
+          ip_address: ip,
+          user_agent: userAgent,
+          metadata: {
+            timestamp: new Date().toISOString(),
+            source: 'coming-soon-page',
+          },
+        })
+    }
+  } catch (error) {
+    console.error('Activity logging error:', error)
+    // Don't fail request if logging fails
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const clientIp = request.headers.get('x-forwarded-for') || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown'
+    const userAgent = request.headers.get('user-agent') || 'unknown'
+
+    // Check rate limiting
+    const rateLimit = await checkRateLimit(clientIp)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again in 1 hour.' },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      )
+    }
+
     const body = await request.json()
     const { email, name, source } = body
 
@@ -18,7 +115,7 @@ export async function POST(request: NextRequest) {
     // Check if email already exists
     const { data: existing, error: checkError } = await supabase
       .from('subscribers')
-      .select('email')
+      .select('id, email')
       .eq('email', email.toLowerCase().trim())
       .single()
 
@@ -31,6 +128,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (existing) {
+      // Log activity for existing email
+      await logActivity(email, 'duplicate_attempt', clientIp, userAgent, existing.id)
       return NextResponse.json(
         { error: 'You are already on our waitlist!' },
         { status: 409 }
@@ -57,13 +156,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Log successful subscription
+    await logActivity(email, 'subscription_created', clientIp, userAgent, data.id)
+
     return NextResponse.json(
       { 
         success: true, 
         message: 'Great! You are on the waitlist. We will get back to you soon.',
         data 
       },
-      { status: 201 }
+      { 
+        status: 201,
+        headers: {
+          'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+        }
+      }
     )
   } catch (error) {
     console.error('Subscription error:', error)
