@@ -109,7 +109,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const body = await request.json()
+    // Parse request body with error handling
+    let body: any
+    try {
+      body = await request.json()
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError)
+      return NextResponse.json(
+        { error: 'Invalid request format. Please send valid JSON.' },
+        { status: 400 }
+      )
+    }
+
     const { email, name, source } = body
 
     // Validate email with proper regex pattern
@@ -185,7 +196,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Subscription error:', error)
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      { error: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }
     )
   }
@@ -193,7 +204,7 @@ export async function POST(request: NextRequest) {
 
 // Handle OPTIONS for CORS
 export async function OPTIONS() {
-  return new NextResponse(null, {
+  return NextResponse.json(null, {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
