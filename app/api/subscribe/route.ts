@@ -30,19 +30,19 @@ async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining
       const newCount = existing.requests_count + 1
       const allowed = newCount <= RATE_LIMIT_MAX_REQUESTS
 
-      const { error: updateError } = await supabase
+      // Non-blocking update
+      supabase
         .from('api_rate_limits')
         .update({ requests_count: newCount })
         .eq('id', existing.id)
-
-      if (updateError) {
-        console.error('Rate limit update error:', updateError)
-      }
+        .catch((err: any) => {
+          console.error('Rate limit update error (non-blocking):', err)
+        })
 
       return { allowed, remaining: Math.max(0, RATE_LIMIT_MAX_REQUESTS - newCount) }
     } else {
-      // First request in this window
-      const { error: insertError } = await supabase
+      // First request in this window - non-blocking insert
+      supabase
         .from('api_rate_limits')
         .insert({
           endpoint: '/api/subscribe',
@@ -51,11 +51,9 @@ async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining
           window_start: now.toISOString(),
           window_end: new Date(now.getTime() + RATE_LIMIT_WINDOW_MINUTES * 60000).toISOString(),
         })
-
-      if (insertError) {
-        console.error('Rate limit insert error:', insertError)
-        // Still allow the request even if logging fails
-      }
+        .catch((err: any) => {
+          console.error('Rate limit insert error (non-blocking):', err)
+        })
 
       return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1 }
     }
@@ -66,9 +64,11 @@ async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining
 }
 
 async function logActivity(email: string, action: string, ip: string, userAgent: string, subscriberId?: string) {
+  // Fire and forget - don't block the subscription on logging
   try {
     if (subscriberId) {
-      await supabase
+      // Non-blocking insert
+      supabase
         .from('subscription_activity')
         .insert({
           subscriber_id: subscriberId,
@@ -80,10 +80,17 @@ async function logActivity(email: string, action: string, ip: string, userAgent:
             source: 'coming-soon-page',
           },
         })
+        .then(() => {
+          // Success - no action needed
+        })
+        .catch((err: any) => {
+          // Log but don't throw
+          console.error('Activity logging error (non-blocking):', err)
+        })
     }
   } catch (error) {
-    console.error('Activity logging error:', error)
-    // Don't fail request if logging fails
+    console.error('Activity logging wrapper error:', error)
+    // Don't block the subscription
   }
 }
 
