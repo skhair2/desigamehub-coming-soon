@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Poppins, Space_Grotesk, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
@@ -132,8 +132,15 @@ export const metadata: Metadata = {
     title: 'DesiPlayground',
   },
   referrer: 'strict-origin-when-cross-origin',
+}
+
+export const viewport: Viewport = {
   colorScheme: 'dark',
   themeColor: '#FF6B35',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 }
 
 export default function RootLayout({

@@ -139,52 +139,63 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if email already exists
-    const { data: existing, error: checkError } = await supabase
-      .from('subscribers')
-      .select('id, email')
-      .eq('email', email.toLowerCase().trim())
-      .single()
+    // Check if email already exists (with error handling)
+    let existing: any = null
+    try {
+      const { data: checkData, error: checkError } = await supabase
+        .from('subscribers')
+        .select('id, email')
+        .eq('email', email.toLowerCase().trim())
+        .single()
 
-    if (checkError && checkError.code !== 'PGRST116') {
-      console.error('Database check error:', checkError)
-      return NextResponse.json(
-        { error: 'Database error. Please try again.' },
-        { status: 500 }
-      )
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('Duplicate check error (continuing anyway):', checkError)
+      } else if (checkData) {
+        existing = checkData
+      }
+    } catch (checkErr) {
+      console.error('Unexpected error during duplicate check:', checkErr)
+      // Continue anyway - don't block subscription
     }
 
     if (existing) {
       // Log activity for existing email
-      await logActivity(email, 'duplicate_attempt', clientIp, userAgent, existing.id)
+      logActivity(email, 'duplicate_attempt', clientIp, userAgent, existing.id)
       return NextResponse.json(
         { error: 'You are already on our waitlist!' },
         { status: 409 }
       )
     }
 
-    // Insert new subscriber
+    // Insert new subscriber - let database handle defaults for timestamps
     const { data, error } = await supabase
       .from('subscribers')
       .insert({
         email: email.toLowerCase().trim(),
         name: name?.trim() || null,
         source: source || 'coming-soon-page',
-        subscribed_at: new Date().toISOString(),
       })
-      .select()
+      .select('id, email, name, created_at')
       .single()
 
     if (error) {
-      console.error('Supabase error:', error)
+      console.error('Supabase insert error:', error)
       return NextResponse.json(
         { error: 'Failed to subscribe. Please try again.' },
         { status: 500 }
       )
     }
 
-    // Log successful subscription
-    await logActivity(email, 'subscription_created', clientIp, userAgent, data.id)
+    if (!data) {
+      console.error('No data returned from insert')
+      return NextResponse.json(
+        { error: 'Failed to subscribe. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    // Log successful subscription (non-blocking)
+    logActivity(email, 'subscription_created', clientIp, userAgent, data.id)
 
     return NextResponse.json(
       { 
