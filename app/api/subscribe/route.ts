@@ -101,21 +101,6 @@ export async function POST(request: NextRequest) {
                      'unknown'
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
-    // Check rate limiting
-    const rateLimit = await checkRateLimit(clientIp)
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again in 1 hour.' },
-        { 
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
-            'X-RateLimit-Remaining': '0',
-          }
-        }
-      )
-    }
-
     // Parse request body with error handling
     let body: any
     try {
@@ -139,47 +124,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if email already exists (with error handling)
-    let existing: any = null
-    try {
-      const { data: checkData, error: checkError } = await supabase
-        .from('subscribers')
-        .select('id, email')
-        .eq('email', email.toLowerCase().trim())
-        .single()
+    const normalizedEmail = email.toLowerCase().trim()
 
-      if (checkError && checkError.code !== 'PGRST116') {
-        console.error('Duplicate check error (continuing anyway):', checkError)
-      } else if (checkData) {
-        existing = checkData
-      }
-    } catch (checkErr) {
-      console.error('Unexpected error during duplicate check:', checkErr)
-      // Continue anyway - don't block subscription
-    }
-
-    if (existing) {
-      // Log activity for existing email
-      logActivity(email, 'duplicate_attempt', clientIp, userAgent, existing.id)
-      return NextResponse.json(
-        { error: 'You are already on our waitlist!' },
-        { status: 409 }
-      )
-    }
-
-    // Insert new subscriber - let database handle defaults for timestamps
+    // Attempt to insert subscriber directly
+    // If email exists (unique constraint), will fail with duplicate
     const { data, error } = await supabase
       .from('subscribers')
       .insert({
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         name: name?.trim() || null,
         source: source || 'coming-soon-page',
       })
       .select('id, email, name, created_at')
       .single()
 
+    // Handle errors
     if (error) {
-      console.error('Supabase insert error:', error)
+      console.error('Subscription error details:', error.code, error.message)
+      
+      // Check if it's a unique constraint violation (duplicate email)
+      if (error.code === '23505' || error.message?.includes('unique')) {
+        // Log duplicate attempt (non-blocking)
+        logActivity(email, 'duplicate_attempt', clientIp, userAgent)
+        return NextResponse.json(
+          { error: 'You are already on our waitlist!' },
+          { status: 409 }
+        )
+      }
+
+      // All other errors
+      console.error('Failed to subscribe:', error)
       return NextResponse.json(
         { error: 'Failed to subscribe. Please try again.' },
         { status: 500 }
@@ -197,11 +171,17 @@ export async function POST(request: NextRequest) {
     // Log successful subscription (non-blocking)
     logActivity(email, 'subscription_created', clientIp, userAgent, data.id)
 
+    // Check rate limiting after successful subscription
+    const rateLimit = await checkRateLimit(clientIp)
+
     return NextResponse.json(
       { 
         success: true, 
         message: 'Great! You are on the waitlist. We will get back to you soon.',
-        data 
+        data: {
+          id: data.id,
+          email: data.email,
+        }
       },
       { 
         status: 201,
