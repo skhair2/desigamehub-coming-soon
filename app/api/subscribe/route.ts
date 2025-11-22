@@ -171,8 +171,14 @@ export async function POST(request: NextRequest) {
     // Log successful subscription (non-blocking)
     logActivity(email, 'subscription_created', clientIp, userAgent, data.id)
 
-    // Check rate limiting after successful subscription
-    const rateLimit = await checkRateLimit(clientIp)
+    // Check rate limiting after successful subscription (with error recovery)
+    let rateLimit = { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS }
+    try {
+      rateLimit = await checkRateLimit(clientIp)
+    } catch (rateLimitError) {
+      console.error('Rate limit check failed (continuing anyway):', rateLimitError)
+      // Continue without blocking the successful subscription
+    }
 
     return NextResponse.json(
       { 
