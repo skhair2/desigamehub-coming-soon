@@ -101,6 +101,21 @@ export async function POST(request: NextRequest) {
                      'unknown'
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
+    // Debug environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseKey,
+      })
+      return NextResponse.json(
+        { error: 'Server configuration error. Please contact support.' },
+        { status: 503 }
+      )
+    }
+
     // Parse request body with error handling
     let body: any
     try {
