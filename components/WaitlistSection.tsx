@@ -34,10 +34,44 @@ export default function WaitlistSection() {
         throw new Error(data.error || 'Failed to subscribe')
       }
 
-      toast.success('Great! You are on the waitlist. We will get back to you soon.')
+      toast.success('Great! You are on the waitlist. Check your email for confirmation.', {
+        position: 'top-center',
+        duration: 5000,
+        style: {
+          background: '#1a1a1a',
+          color: '#fff',
+          borderRadius: '12px',
+          padding: '16px 24px',
+          boxShadow: '0 10px 40px rgba(255, 107, 53, 0.3)',
+          border: '2px solid #FF6B35',
+          fontSize: '16px',
+          fontWeight: '600',
+          maxWidth: '500px',
+          margin: '0 auto',
+          zIndex: 9999,
+        },
+        icon: '✓',
+      })
       setFormData({ name: '', email: '' })
     } catch (error: any) {
-      toast.error(error.message || 'Something went wrong. Please try again.')
+      toast.error(error.message || 'Something went wrong. Please try again.', {
+        position: 'top-center',
+        duration: 5000,
+        style: {
+          background: '#1a1a1a',
+          color: '#fff',
+          borderRadius: '12px',
+          padding: '16px 24px',
+          boxShadow: '0 10px 40px rgba(255, 107, 53, 0.3)',
+          border: '2px solid #EF4444',
+          fontSize: '16px',
+          fontWeight: '600',
+          maxWidth: '500px',
+          margin: '0 auto',
+          zIndex: 9999,
+        },
+        icon: '✕',
+      })
     } finally {
       setIsSubmitting(false)
     }

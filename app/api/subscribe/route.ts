@@ -38,54 +38,41 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
 
-    // Step 1: Save to Supabase using SQL
+    // Step 1: Save to Supabase using Edge Function (avoid REST API DNS issues)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase credentials')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 503 }
-      )
-    }
-
-    // Use Supabase SQL API endpoint
+    // Try to save to Supabase via Edge Function but don't block if it fails
     let subscriptionSaved = false
-    try {
-      const sqlUrl = `${supabaseUrl}/rest/v1/subscribers`
-      const response = await fetch(sqlUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Prefer': 'return=representation',
-        },
-        body: JSON.stringify({
-          email: normalizedEmail,
-          name: subscriberName,
-          source: source || 'coming-soon-page',
-        }),
-        signal: AbortSignal.timeout(10000),
-      })
-
-      if (response.ok) {
-        subscriptionSaved = true
-        console.log('✅ Subscription saved to Supabase')
-      } else {
-        const errText = await response.text()
-        console.warn('⚠️ Supabase save failed:', {
-          status: response.status,
-          error: errText?.substring(0, 100),
+    if (supabaseUrl && supabaseKey) {
+      try {
+        // Use Supabase Edge Function which is highly available
+        const edgeFunctionUrl = `${supabaseUrl}/functions/v1/subscribe`
+        const response = await fetch(edgeFunctionUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseKey}`,
+          },
+          body: JSON.stringify({
+            email: normalizedEmail,
+            name: subscriberName,
+            source: source || 'coming-soon-page',
+          }),
+          signal: AbortSignal.timeout(10000),
         })
-        // Continue anyway - send email
+
+        if (response.ok) {
+          subscriptionSaved = true
+          console.log('✅ Subscription saved via Edge Function')
+        } else {
+          const errText = await response.text()
+          console.warn('⚠️ Edge Function returned:', response.status, errText?.substring(0, 100))
+        }
+      } catch (dbError: any) {
+        console.warn('⚠️ Supabase unavailable (this is OK):', dbError?.message)
+        // Continue anyway - email is more important
       }
-    } catch (dbError: any) {
-      console.warn('⚠️ Could not save to Supabase:', {
-        error: dbError?.message,
-      })
-      // Continue anyway - send email confirmation
     }
 
     // Step 2: Send confirmation email via Resend
