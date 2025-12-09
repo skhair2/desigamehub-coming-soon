@@ -134,13 +134,18 @@ export async function POST(request: NextRequest) {
         name: name?.trim() || null,
         source: source || 'coming-soon-page',
       })
+      .catch((err: any) => {
+        console.error('Supabase insert catch error:', err)
+        return { error: err, data: null }
+      })
 
     // Handle errors
     if (error) {
-      console.error('Subscription error details:', error.code, error.message)
+      console.error('Subscription error details:', JSON.stringify(error))
       
       // Check if it's a unique constraint violation (duplicate email)
-      if (error.code === '23505' || error.message?.includes('unique')) {
+      const errorMessage = error.message || error.toString()
+      if (error.code === '23505' || errorMessage.includes('unique')) {
         // Log duplicate attempt (non-blocking)
         logActivity(email, 'duplicate_attempt', clientIp, userAgent)
         return NextResponse.json(
@@ -150,13 +155,15 @@ export async function POST(request: NextRequest) {
       }
 
       // All other errors
-      console.error('Failed to subscribe:', error)
+      console.error('Failed to subscribe:', JSON.stringify(error))
       return NextResponse.json(
         { error: 'Failed to subscribe. Please try again.' },
         { status: 500 }
       )
     }
 
+    console.log('Subscription successful for:', normalizedEmail)
+    
     // Generate a simple response without querying the inserted data
     // (to avoid RLS select permission issues)
     const subscriberId = normalizedEmail // Use email as temporary ID, will be updated after
