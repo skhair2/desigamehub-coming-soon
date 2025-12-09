@@ -1,33 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import fs from 'fs'
-import path from 'path'
+import postgres from 'postgres'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-
-// Fallback: save to local file when Supabase is unavailable (localhost only)
-function saveToLocalFile(email: string, name: string, source: string) {
-  try {
-    const dataDir = path.join(process.cwd(), '.subscribers')
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true })
-    }
-
-    const filePath = path.join(dataDir, 'subscribers.jsonl')
-    const record = {
-      email,
-      name,
-      source,
-      timestamp: new Date().toISOString(),
-    }
-    fs.appendFileSync(filePath, JSON.stringify(record) + '\n')
-    console.log('✅ Saved to local file:', record)
-    return true
-  } catch (error: any) {
-    console.error('⚠️ Failed to save to local file:', error?.message)
-    return false
-  }
-}
 
 export async function POST(request: NextRequest) {
   console.log('\n========== SUBSCRIBE REQUEST RECEIVED ==========')
@@ -72,68 +47,87 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
 
-    // Step 1: Try to save to Supabase using direct SQL via RPC
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    console.log('Environment check:', {
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseKey,
-      urlStart: supabaseUrl?.substring(0, 20),
-    })
-
     let subscriptionSaved = false
-    if (supabaseUrl && supabaseKey) {
+    
+    // Try direct PostgreSQL connection via pooler (works on Vercel)
+    const databaseUrl = process.env.DATABASE_URL
+    if (databaseUrl) {
       try {
-        console.log('📌 Attempting direct REST API call to Supabase...')
-        
-        const insertUrl = `${supabaseUrl}/rest/v1/subscribers`
-        console.log('POST URL:', insertUrl)
-
-        const insertResponse = await fetch(insertUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
+        console.log('📌 Attempting direct PostgreSQL connection via pooler...')
+        const sql = postgres(databaseUrl, {
+          ssl: 'require',
+          transform: {
+            undefined: null,
           },
-          body: JSON.stringify({
-            email: normalizedEmail,
-            name: subscriberName,
-            source: source || 'coming-soon-page',
-          }),
         })
 
-        console.log('📬 REST API Response status:', insertResponse.status, insertResponse.statusText)
-        const responseText = await insertResponse.text()
-        console.log('📬 REST API Response body:', responseText?.substring(0, 300))
+        console.log('📝 Inserting subscriber via PostgreSQL...')
+        const result = await sql`
+          INSERT INTO subscribers (email, name, source)
+          VALUES (${normalizedEmail}, ${subscriberName}, ${source || 'coming-soon-page'})
+          ON CONFLICT (email) DO NOTHING
+          RETURNING id, email, created_at
+        `
 
-        if (insertResponse.ok || insertResponse.status === 201) {
+        if (result.length > 0) {
           subscriptionSaved = true
-          console.log('✅ Saved to Supabase via REST API')
-        } else if (insertResponse.status === 409) {
-          console.log('ℹ️ Email already subscribed (409 Conflict)')
-          subscriptionSaved = true
+          console.log('✅ Saved to PostgreSQL:', {
+            id: result[0].id,
+            email: result[0].email,
+            created_at: result[0].created_at,
+          })
         } else {
-          console.warn('⚠️ REST API error:', insertResponse.status, responseText?.substring(0, 200))
-          // Fallback to local file on error
-          subscriptionSaved = saveToLocalFile(normalizedEmail, subscriberName, source || 'coming-soon-page')
+          console.log('ℹ️ Email already exists in database')
+          subscriptionSaved = true // Still count as success
         }
+
+        await sql.end()
       } catch (error: any) {
-        console.error('❌ REST API error:', {
+        console.error('❌ PostgreSQL error:', {
           message: error?.message,
           name: error?.name,
           code: error?.code,
-          cause: error?.cause?.message,
         })
-        // Fallback to local file when Supabase unreachable (localhost development)
-        console.log('📝 Using local file fallback (localhost)...')
-        subscriptionSaved = saveToLocalFile(normalizedEmail, subscriberName, source || 'coming-soon-page')
+        // Continue anyway - email confirmation is most important
       }
-    } else {
-      console.warn('⚠️ Supabase credentials not configured')
-      // Fallback to local file
-      subscriptionSaved = saveToLocalFile(normalizedEmail, subscriberName, source || 'coming-soon-page')
+    }
+    
+    // Fallback: Try REST API for older configurations
+    if (!subscriptionSaved) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+      if (supabaseUrl && supabaseKey) {
+        try {
+          console.log('📌 Attempting fallback: direct REST API call to Supabase...')
+          
+          const insertUrl = `${supabaseUrl}/rest/v1/subscribers`
+          console.log('POST URL:', insertUrl)
+
+          const insertResponse = await fetch(insertUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${supabaseKey}`,
+            },
+            body: JSON.stringify({
+              email: normalizedEmail,
+              name: subscriberName,
+              source: source || 'coming-soon-page',
+            }),
+          })
+
+          console.log('📬 REST API Response status:', insertResponse.status)
+
+          if (insertResponse.ok || insertResponse.status === 201 || insertResponse.status === 409) {
+            subscriptionSaved = true
+            console.log('✅ Saved to Supabase via REST API')
+          }
+        } catch (error: any) {
+          console.error('⚠️ Fallback REST API also failed:', error?.message)
+        }
+      }
     }
 
     // Step 2: Send confirmation email via Resend
