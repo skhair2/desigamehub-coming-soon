@@ -64,33 +64,25 @@ export async function POST(request: NextRequest) {
       method: 'connection-pooler',
     })
 
-    // Extract pooler endpoint from DATABASE_URL
-    // Format: postgres://user:password@host:port/db
-    const dbUrlObj = new URL(databaseUrl)
-    const poolerHost = dbUrlObj.hostname
-    const poolerPort = dbUrlObj.port || '6543'
-    
-    // Build REST API URL using pooler endpoint instead of project subdomain
-    // This avoids DNS issues with project-specific subdomains
-    const restUrl = `https://${poolerHost}:${poolerPort}/rest/v1/subscribers`
+    // Use the pooler endpoint with standard HTTPS on port 443
+    // This avoids both DNS issues AND TLS certificate problems
+    const poolerUrl = 'https://aws-0-us-east-1.pooler.supabase.com/rest/v1/subscribers'
 
-    console.log('Using connection pooler endpoint:', {
-      host: poolerHost,
-      port: poolerPort,
-      url: restUrl,
+    console.log('Using connection pooler via HTTPS:', {
+      url: poolerUrl,
       timestamp: new Date().toISOString(),
     })
 
     let response: any
 
     try {
-      console.log('Initiating fetch to Supabase REST API via pooler', {
+      console.log('Initiating fetch to Supabase pooler via HTTPS', {
         method: 'POST',
-        url: restUrl,
+        url: poolerUrl,
         timestamp: new Date().toISOString(),
       })
 
-      response = await fetch(restUrl, {
+      response = await fetch(poolerUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,18 +99,18 @@ export async function POST(request: NextRequest) {
         keepalive: false,
       })
 
-      console.log('Received response from Supabase pooler', {
+      console.log('Received response from pooler', {
         status: response.status,
         statusText: response.statusText,
         timestamp: new Date().toISOString(),
       })
 
     } catch (error: any) {
-      console.error('Fetch error when calling Supabase via pooler:', {
+      console.error('Fetch error when calling Supabase pooler:', {
         errorName: error?.name,
         errorMessage: error?.message,
         errorCode: error?.code,
-        errorCause: error?.cause?.message || error?.cause?.code,
+        errorCause: error?.cause?.message || error?.cause?.code || String(error?.cause),
         timestamp: new Date().toISOString(),
       })
 
