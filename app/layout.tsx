@@ -75,8 +75,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://desiplayground.com',
     languages: {
-      'en-US': 'https://desiplayground.com',
+      'en-US': 'https://desiplayground.com/en-US',
+      'en-GB': 'https://desiplayground.com/en-GB',
+      'hi': 'https://desiplayground.com/hi',
       'en': 'https://desiplayground.com',
+      'x-default': 'https://desiplayground.com',
     },
   },
   openGraph: {
@@ -91,6 +94,7 @@ export const metadata: Metadata = {
         height: 630,
         alt: 'DesiPlayground - Online Desi Games Platform',
         type: 'image/jpeg',
+        secureUrl: 'https://desiplayground.com/og-image.jpg',
       },
       {
         url: '/og-image-square.jpg',
@@ -98,18 +102,24 @@ export const metadata: Metadata = {
         height: 800,
         alt: 'DesiPlayground - Play Indian Games Online',
         type: 'image/jpeg',
+        secureUrl: 'https://desiplayground.com/og-image-square.jpg',
       },
     ],
     locale: 'en_US',
+    alternateLocale: ['hi_IN', 'en_GB', 'en_AU'],
     type: 'website',
+    determiner: 'auto',
   },
   twitter: {
     card: 'summary_large_image',
     site: '@desiplayground',
     creator: '@desiplayground',
-    title: 'DesiPlayground - Online Desi Games & Party Games',
-    description: 'Play tambola, carrom, ludo & more desi games online with friends. Real-time multiplayer Indian gaming platform.',
-    images: ['/og-image.jpg'],
+    title: 'DesiPlayground - Play Desi Games & Indian Party Games Online',
+    description: 'Play tambola, carrom, ludo & more traditional desi games online with friends. Real-time multiplayer Indian gaming platform.',
+    images: {
+      url: '/og-image.jpg',
+      alt: 'DesiPlayground Gaming Platform',
+    },
   },
   robots: {
     index: true,
@@ -121,17 +131,22 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
+      'noimageindex': false,
     },
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'DesiPlayground',
+    startupImage: '/apple-touch-icon.png',
   },
+  manifest: '/site.webmanifest',
   referrer: 'strict-origin-when-cross-origin',
+  colorScheme: 'dark',
 }
 
 export const viewport: Viewport = {
