@@ -51,25 +51,80 @@ export async function POST(request: NextRequest) {
     console.log('Processing subscription for:', normalizedEmail, {
       timestamp: new Date().toISOString(),
       ip: clientIp,
+      env: process.env.NODE_ENV,
     })
 
-    // Use Supabase REST API directly (bypasses supabase-js networking issues)
+    // Use Supabase REST API directly with POST method (most reliable)
     const restUrl = `${supabaseUrl}/rest/v1/subscribers`
     
-    const response = await fetch(restUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Prefer': 'return=representation',
-      },
-      body: JSON.stringify({
-        email: normalizedEmail,
-        name: name?.trim() || null,
-        source: source || 'coming-soon-page',
-      }),
+    console.log('Supabase REST endpoint:', {
+      url: restUrl,
+      timeout: '30s',
+      timestamp: new Date().toISOString(),
     })
+
+    let response: any
+    let lastError: any = null
+    let timeoutId: NodeJS.Timeout | null = null
+
+    try {
+      // Single attempt with generous timeout (30 seconds for Vercel cold starts)
+      const controller = new AbortController()
+      timeoutId = setTimeout(() => {
+        console.error('Request timeout - aborting', { timestamp: new Date().toISOString() })
+        controller.abort()
+      }, 30000)
+
+      console.log('Initiating fetch to Supabase REST API', {
+        method: 'POST',
+        url: restUrl,
+        timestamp: new Date().toISOString(),
+      })
+
+      response = await fetch(restUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Prefer': 'return=representation',
+          'User-Agent': 'DesiGameHub-Coming-Soon/1.0',
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          name: name?.trim() || null,
+          source: source || 'coming-soon-page',
+        }),
+        signal: controller.signal,
+        // Disable keep-alive to avoid connection pool issues
+        keepalive: false,
+      })
+
+      if (timeoutId) clearTimeout(timeoutId)
+
+      console.log('Received response from Supabase', {
+        status: response.status,
+        statusText: response.statusText,
+        timestamp: new Date().toISOString(),
+      })
+
+    } catch (error: any) {
+      lastError = error
+      if (timeoutId) clearTimeout(timeoutId)
+      
+      console.error('Fetch error when calling Supabase REST API:', {
+        errorName: error?.name,
+        errorMessage: error?.message,
+        errorCode: error?.code,
+        stack: error?.stack?.substring(0, 500),
+        timestamp: new Date().toISOString(),
+      })
+
+      return NextResponse.json(
+        { error: 'Unable to connect to the subscription service. Please try again in a moment.' },
+        { status: 503 }
+      )
+    }
 
     const data = await response.json()
 
