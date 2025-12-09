@@ -11,6 +11,10 @@ if (typeof window === 'undefined') {
       url: supabaseUrl ? 'present' : 'missing',
       key: supabaseAnonKey ? 'present' : 'missing',
     })
+  } else {
+    console.log('Supabase credentials loaded:', {
+      url: supabaseUrl.substring(0, 30) + '...',
+    })
   }
 }
 
@@ -24,13 +28,25 @@ if (supabaseUrl && supabaseAnonKey) {
         persistSession: false, // Disable persistence on server
         autoRefreshToken: false,
       },
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: {
+          'X-Client-Info': 'desiplayground-supabase-js',
+        },
+      },
     })
+    console.log('Supabase client initialized successfully')
   } catch (err) {
     console.error('Failed to initialize Supabase client:', err)
     supabase = null
   }
 } else {
-  console.error('Cannot initialize Supabase: missing configuration')
+  console.error('Cannot initialize Supabase: missing configuration', {
+    urlPresent: !!supabaseUrl,
+    keyPresent: !!supabaseAnonKey,
+  })
   // Fallback mock object for build time
   supabase = { 
     from: () => ({ 
