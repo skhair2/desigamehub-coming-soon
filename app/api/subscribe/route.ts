@@ -63,18 +63,30 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
 
+    // Diagnostic: Test connectivity to a simple endpoint first
+    console.log('Running connectivity diagnostic...', { timestamp: new Date().toISOString() })
+    try {
+      const diagTest = await fetch('https://httpbin.org/status/200', { 
+        signal: AbortSignal.timeout(5000),
+        keepalive: false 
+      })
+      console.log('✓ Connectivity test passed (httpbin.org)', { 
+        status: diagTest.status,
+        timestamp: new Date().toISOString() 
+      })
+    } catch (diagError: any) {
+      console.error('✗ Connectivity test FAILED:', {
+        errorName: diagError?.name,
+        errorMessage: diagError?.message,
+        timestamp: new Date().toISOString(),
+      })
+      // Continue anyway - Supabase might work even if httpbin fails
+    }
+
     let response: any
     let lastError: any = null
-    let timeoutId: NodeJS.Timeout | null = null
 
     try {
-      // Single attempt with generous timeout (30 seconds for Vercel cold starts)
-      const controller = new AbortController()
-      timeoutId = setTimeout(() => {
-        console.error('Request timeout - aborting', { timestamp: new Date().toISOString() })
-        controller.abort()
-      }, 30000)
-
       console.log('Initiating fetch to Supabase REST API', {
         method: 'POST',
         url: restUrl,
@@ -88,19 +100,15 @@ export async function POST(request: NextRequest) {
           'apikey': supabaseKey,
           'Authorization': `Bearer ${supabaseKey}`,
           'Prefer': 'return=representation',
-          'User-Agent': 'DesiGameHub-Coming-Soon/1.0',
         },
         body: JSON.stringify({
           email: normalizedEmail,
           name: name?.trim() || null,
           source: source || 'coming-soon-page',
         }),
-        signal: controller.signal,
-        // Disable keep-alive to avoid connection pool issues
+        signal: AbortSignal.timeout(30000),
         keepalive: false,
       })
-
-      if (timeoutId) clearTimeout(timeoutId)
 
       console.log('Received response from Supabase', {
         status: response.status,
@@ -110,13 +118,13 @@ export async function POST(request: NextRequest) {
 
     } catch (error: any) {
       lastError = error
-      if (timeoutId) clearTimeout(timeoutId)
       
       console.error('Fetch error when calling Supabase REST API:', {
         errorName: error?.name,
         errorMessage: error?.message,
         errorCode: error?.code,
-        stack: error?.stack?.substring(0, 500),
+        errorCause: error?.cause,
+        stack: error?.stack?.substring(0, 300),
         timestamp: new Date().toISOString(),
       })
 
