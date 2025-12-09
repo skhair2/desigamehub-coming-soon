@@ -1,37 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 
-// Rate limiting constants
-const RATE_LIMIT_MAX_REQUESTS = 5
-const RATE_LIMIT_WINDOW_MINUTES = 60
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
-  const clientIp = request.headers.get('x-forwarded-for') || 
-                   request.headers.get('x-real-ip') || 
-                   'unknown'
-  const userAgent = request.headers.get('user-agent') || 'unknown'
-
   try {
-    // Validate environment variables
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    const databaseUrl = process.env.DATABASE_URL
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase REST API configuration')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 503 }
-      )
-    }
-
-    if (!databaseUrl) {
-      console.error('Missing DATABASE_URL for connection pooler')
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 503 }
-      )
-    }
-
     // Parse request body
     let body: any
     try {
@@ -56,165 +29,114 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = email.toLowerCase().trim()
+    const subscriberName = name?.trim() || 'Subscriber'
 
-    console.log('Processing subscription for:', normalizedEmail, {
+    console.log('📧 Processing subscription:', {
+      email: normalizedEmail,
+      name: subscriberName,
+      source: source || 'coming-soon-page',
       timestamp: new Date().toISOString(),
-      ip: clientIp,
-      env: process.env.NODE_ENV,
-      method: 'connection-pooler',
     })
 
-    // Work around DNS resolution issues by using IP address directly
-    // First, try to resolve the domain to an IP
-    const { resolve4 } = await import('dns').then(m => ({ 
-      resolve4: m.resolve4 
-    })).catch(() => ({ resolve4: null }))
+    // Step 1: Save to Supabase using SQL
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    let restUrl = `${supabaseUrl}/rest/v1/subscribers`
-
-    // If DNS resolution available, try to get the IP
-    if (resolve4) {
-      try {
-        const ips = await new Promise<string[]>((resolve, reject) => {
-          resolve4('mfdycgjdaxygpxyxnfuq.supabase.co', (err, addresses) => {
-            if (err) reject(err)
-            else resolve(addresses)
-          })
-        })
-        if (ips.length > 0) {
-          // Use IP directly instead of hostname to bypass DNS issues
-          restUrl = `https://${ips[0]}/rest/v1/subscribers`
-          console.log('Resolved to IP:', { ip: ips[0], timestamp: new Date().toISOString() })
-        }
-      } catch (dnsError) {
-        console.log('DNS resolution failed, using hostname', { 
-          error: (dnsError as any)?.message,
-          timestamp: new Date().toISOString() 
-        })
-        // Fall back to using hostname
-      }
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase credentials')
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 503 }
+      )
     }
 
-    console.log('Using REST endpoint:', {
-      url: restUrl,
-      timestamp: new Date().toISOString(),
-    })
-
-    let response: any
-
+    // Use Supabase SQL API endpoint
+    let subscriptionSaved = false
     try {
-      console.log('Initiating fetch to Supabase REST API', {
-        method: 'POST',
-        url: restUrl,
-        timestamp: new Date().toISOString(),
-      })
-
-      response = await fetch(restUrl, {
+      const sqlUrl = `${supabaseUrl}/rest/v1/subscribers`
+      const response = await fetch(sqlUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Host': 'mfdycgjdaxygpxyxnfuq.supabase.co',
           'apikey': supabaseKey,
           'Authorization': `Bearer ${supabaseKey}`,
           'Prefer': 'return=representation',
         },
         body: JSON.stringify({
           email: normalizedEmail,
-          name: name?.trim() || null,
+          name: subscriberName,
           source: source || 'coming-soon-page',
         }),
-        signal: AbortSignal.timeout(30000),
-        keepalive: false,
+        signal: AbortSignal.timeout(10000),
       })
 
-      console.log('Received response from Supabase', {
-        status: response.status,
-        statusText: response.statusText,
-        timestamp: new Date().toISOString(),
+      if (response.ok) {
+        subscriptionSaved = true
+        console.log('✅ Subscription saved to Supabase')
+      } else {
+        const errText = await response.text()
+        console.warn('⚠️ Supabase save failed:', {
+          status: response.status,
+          error: errText?.substring(0, 100),
+        })
+        // Continue anyway - send email
+      }
+    } catch (dbError: any) {
+      console.warn('⚠️ Could not save to Supabase:', {
+        error: dbError?.message,
       })
-
-    } catch (error: any) {
-      console.error('Fetch error when calling Supabase REST API:', {
-        errorName: error?.name,
-        errorMessage: error?.message,
-        errorCode: error?.code,
-        errorCause: error?.cause?.message || error?.cause?.code || String(error?.cause),
-        timestamp: new Date().toISOString(),
-      })
-
-      return NextResponse.json(
-        { error: 'Unable to connect to the subscription service. Please try again in a moment.' },
-        { status: 503 }
-      )
+      // Continue anyway - send email confirmation
     }
 
-    const data = await response.json()
-
-    console.log('Supabase response:', {
-      status: response.status,
-      timestamp: new Date().toISOString(),
-    })
-
-    // Handle errors
-    if (!response.ok) {
-      const errorMessage = data?.message || data?.error?.message || JSON.stringify(data)
-      
-      // Check for duplicate email
-      if (response.status === 409 || errorMessage?.includes('duplicate') || errorMessage?.includes('unique')) {
-        console.log('Duplicate email attempt:', normalizedEmail)
-        return NextResponse.json(
-          { error: 'You are already on our waitlist!' },
-          { status: 409 }
-        )
-      }
-
-      // 400 errors from Supabase
-      if (response.status === 400) {
-        console.error('Bad request to Supabase:', errorMessage)
-        if (errorMessage?.includes('unique')) {
-          return NextResponse.json(
-            { error: 'You are already on our waitlist!' },
-            { status: 409 }
-          )
-        }
-        return NextResponse.json(
-          { error: 'Invalid data provided' },
-          { status: 400 }
-        )
-      }
-
-      // Auth errors
-      if (response.status === 401 || response.status === 403) {
-        console.error('Authentication error:', errorMessage)
-        return NextResponse.json(
-          { error: 'Server authentication error' },
-          { status: 503 }
-        )
-      }
-
-      console.error('Subscription error:', {
-        status: response.status,
-        message: errorMessage,
-        timestamp: new Date().toISOString(),
+    // Step 2: Send confirmation email via Resend
+    let emailSent = false
+    try {
+      const emailResponse = await resend.emails.send({
+        from: 'noreply@desiplayground.com',
+        to: normalizedEmail,
+        subject: '🎮 Welcome to DesiPlayground Waitlist!',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>🎮 Welcome to DesiPlayground!</h2>
+            <p>Hi ${subscriberName},</p>
+            <p>Thank you for joining our waitlist! We're excited to bring you the best desi games online.</p>
+            <p>
+              <strong>What's coming:</strong>
+            </p>
+            <ul>
+              <li>🎲 Multiplayer Tambola & Housie</li>
+              <li>♟️ Online Carrom Games</li>
+              <li>🃏 Ludo & Indian Card Games</li>
+              <li>🎭 Dumb Charades & Party Games</li>
+            </ul>
+            <p>We'll notify you as soon as we launch!</p>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;" />
+            <p style="color: #666; font-size: 12px;">© 2025 DesiPlayground. All rights reserved.</p>
+          </div>
+        `,
       })
 
-      return NextResponse.json(
-        { error: 'Failed to subscribe. Please try again.' },
-        { status: 500 }
-      )
+      if (emailResponse.data?.id) {
+        emailSent = true
+        console.log('✅ Confirmation email sent:', emailResponse.data.id)
+      } else {
+        console.warn('⚠️ Email send failed:', emailResponse.error)
+      }
+    } catch (emailError: any) {
+      console.error('❌ Email error:', emailError?.message)
+      // Still return success since we may have saved to DB
     }
 
-    console.log('Subscription successful for:', normalizedEmail, {
-      timestamp: new Date().toISOString(),
-    })
-
+    // Step 3: Return success
     return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Great! You are on the waitlist. We will get back to you soon.',
+      {
+        success: true,
+        message: 'Great! You are on the waitlist. Check your email for confirmation.',
         data: {
           email: normalizedEmail,
-        }
+          saved_to_db: subscriptionSaved,
+          confirmation_sent: emailSent,
+        },
       },
       { status: 201 }
     )
