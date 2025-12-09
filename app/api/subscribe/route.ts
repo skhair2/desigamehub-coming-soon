@@ -14,9 +14,18 @@ export async function POST(request: NextRequest) {
     // Validate environment variables
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const databaseUrl = process.env.DATABASE_URL
 
     if (!supabaseUrl || !supabaseKey) {
-      console.error('Missing Supabase configuration')
+      console.error('Missing Supabase REST API configuration')
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 503 }
+      )
+    }
+
+    if (!databaseUrl) {
+      console.error('Missing DATABASE_URL for connection pooler')
       return NextResponse.json(
         { error: 'Server configuration error' },
         { status: 503 }
@@ -52,42 +61,30 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
       ip: clientIp,
       env: process.env.NODE_ENV,
+      method: 'connection-pooler',
     })
 
-    // Use Supabase REST API directly with POST method (most reliable)
-    const restUrl = `${supabaseUrl}/rest/v1/subscribers`
+    // Extract pooler endpoint from DATABASE_URL
+    // Format: postgres://user:password@host:port/db
+    const dbUrlObj = new URL(databaseUrl)
+    const poolerHost = dbUrlObj.hostname
+    const poolerPort = dbUrlObj.port || '6543'
     
-    console.log('Supabase REST endpoint:', {
+    // Build REST API URL using pooler endpoint instead of project subdomain
+    // This avoids DNS issues with project-specific subdomains
+    const restUrl = `https://${poolerHost}:${poolerPort}/rest/v1/subscribers`
+
+    console.log('Using connection pooler endpoint:', {
+      host: poolerHost,
+      port: poolerPort,
       url: restUrl,
-      timeout: '30s',
       timestamp: new Date().toISOString(),
     })
 
-    // Diagnostic: Test connectivity to a simple endpoint first
-    console.log('Running connectivity diagnostic...', { timestamp: new Date().toISOString() })
-    try {
-      const diagTest = await fetch('https://httpbin.org/status/200', { 
-        signal: AbortSignal.timeout(5000),
-        keepalive: false 
-      })
-      console.log('✓ Connectivity test passed (httpbin.org)', { 
-        status: diagTest.status,
-        timestamp: new Date().toISOString() 
-      })
-    } catch (diagError: any) {
-      console.error('✗ Connectivity test FAILED:', {
-        errorName: diagError?.name,
-        errorMessage: diagError?.message,
-        timestamp: new Date().toISOString(),
-      })
-      // Continue anyway - Supabase might work even if httpbin fails
-    }
-
     let response: any
-    let lastError: any = null
 
     try {
-      console.log('Initiating fetch to Supabase REST API', {
+      console.log('Initiating fetch to Supabase REST API via pooler', {
         method: 'POST',
         url: restUrl,
         timestamp: new Date().toISOString(),
@@ -110,21 +107,18 @@ export async function POST(request: NextRequest) {
         keepalive: false,
       })
 
-      console.log('Received response from Supabase', {
+      console.log('Received response from Supabase pooler', {
         status: response.status,
         statusText: response.statusText,
         timestamp: new Date().toISOString(),
       })
 
     } catch (error: any) {
-      lastError = error
-      
-      console.error('Fetch error when calling Supabase REST API:', {
+      console.error('Fetch error when calling Supabase via pooler:', {
         errorName: error?.name,
         errorMessage: error?.message,
         errorCode: error?.code,
-        errorCause: error?.cause,
-        stack: error?.stack?.substring(0, 300),
+        errorCause: error?.cause?.message || error?.cause?.code,
         timestamp: new Date().toISOString(),
       })
 
@@ -138,7 +132,6 @@ export async function POST(request: NextRequest) {
 
     console.log('Supabase response:', {
       status: response.status,
-      data: data,
       timestamp: new Date().toISOString(),
     })
 
@@ -146,7 +139,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorMessage = data?.message || data?.error?.message || JSON.stringify(data)
       
-      // Check for duplicate email (409 from REST API)
+      // Check for duplicate email
       if (response.status === 409 || errorMessage?.includes('duplicate') || errorMessage?.includes('unique')) {
         console.log('Duplicate email attempt:', normalizedEmail)
         return NextResponse.json(
@@ -182,7 +175,6 @@ export async function POST(request: NextRequest) {
       console.error('Subscription error:', {
         status: response.status,
         message: errorMessage,
-        email: normalizedEmail,
         timestamp: new Date().toISOString(),
       })
 
@@ -192,7 +184,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Subscription successful for:', normalizedEmail)
+    console.log('Subscription successful for:', normalizedEmail, {
+      timestamp: new Date().toISOString(),
+    })
 
     return NextResponse.json(
       { 
