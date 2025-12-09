@@ -183,7 +183,14 @@ export async function POST(request: NextRequest) {
     // Generate a simple response without querying the inserted data
     // (to avoid RLS select permission issues)
     const subscriberId = normalizedEmail // Use email as temporary ID, will be updated after
-    logActivity(email, 'subscription_created', clientIp, userAgent, subscriberId)
+    
+    // Log activity non-blocking
+    try {
+      logActivity(email, 'subscription_created', clientIp, userAgent, subscriberId)
+    } catch (logErr) {
+      console.error('Activity logging failed:', logErr)
+      // Don't block on logging failures
+    }
 
     // Check rate limiting after successful subscription (with error recovery)
     let rateLimit = { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS }
