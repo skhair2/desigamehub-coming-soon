@@ -138,6 +138,18 @@ export const metadata: Metadata = {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
   },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/favicon.svg',
+        color: '#FF6B35',
+      },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -146,7 +158,6 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   referrer: 'strict-origin-when-cross-origin',
-  colorScheme: 'dark',
 }
 
 export const viewport: Viewport = {

@@ -64,25 +64,25 @@ export async function POST(request: NextRequest) {
       method: 'connection-pooler',
     })
 
-    // Use the pooler endpoint with standard HTTPS on port 443
-    // This avoids both DNS issues AND TLS certificate problems
-    const poolerUrl = 'https://aws-0-us-east-1.pooler.supabase.com/rest/v1/subscribers'
+    // Since pooler doesn't expose REST API, fall back to the original project REST API
+    // We now know DNS is working (pooler resolved), so this should work
+    const restUrl = `${supabaseUrl}/rest/v1/subscribers`
 
-    console.log('Using connection pooler via HTTPS:', {
-      url: poolerUrl,
+    console.log('Using project REST API endpoint:', {
+      url: restUrl,
       timestamp: new Date().toISOString(),
     })
 
     let response: any
 
     try {
-      console.log('Initiating fetch to Supabase pooler via HTTPS', {
+      console.log('Initiating fetch to Supabase REST API', {
         method: 'POST',
-        url: poolerUrl,
+        url: restUrl,
         timestamp: new Date().toISOString(),
       })
 
-      response = await fetch(poolerUrl, {
+      response = await fetch(restUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,14 +99,14 @@ export async function POST(request: NextRequest) {
         keepalive: false,
       })
 
-      console.log('Received response from pooler', {
+      console.log('Received response from Supabase', {
         status: response.status,
         statusText: response.statusText,
         timestamp: new Date().toISOString(),
       })
 
     } catch (error: any) {
-      console.error('Fetch error when calling Supabase pooler:', {
+      console.error('Fetch error when calling Supabase REST API:', {
         errorName: error?.name,
         errorMessage: error?.message,
         errorCode: error?.code,
