@@ -126,17 +126,14 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim()
 
-    // Attempt to insert subscriber directly
-    // If email exists (unique constraint), will fail with duplicate
-    const { data, error } = await supabase
+    // Attempt to insert subscriber directly (without select to avoid RLS issues)
+    const { error, data: insertData } = await supabase
       .from('subscribers')
       .insert({
         email: normalizedEmail,
         name: name?.trim() || null,
         source: source || 'coming-soon-page',
       })
-      .select('id, email, name, created_at')
-      .single()
 
     // Handle errors
     if (error) {
@@ -160,16 +157,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!data) {
-      console.error('No data returned from insert')
-      return NextResponse.json(
-        { error: 'Failed to subscribe. Please try again.' },
-        { status: 500 }
-      )
-    }
-
-    // Log successful subscription (non-blocking)
-    logActivity(email, 'subscription_created', clientIp, userAgent, data.id)
+    // Generate a simple response without querying the inserted data
+    // (to avoid RLS select permission issues)
+    const subscriberId = normalizedEmail // Use email as temporary ID, will be updated after
+    logActivity(email, 'subscription_created', clientIp, userAgent, subscriberId)
 
     // Check rate limiting after successful subscription (with error recovery)
     let rateLimit = { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS }
@@ -185,8 +176,7 @@ export async function POST(request: NextRequest) {
         success: true, 
         message: 'Great! You are on the waitlist. We will get back to you soon.',
         data: {
-          id: data.id,
-          email: data.email,
+          email: normalizedEmail,
         }
       },
       { 
