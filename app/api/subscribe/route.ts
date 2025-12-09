@@ -126,18 +126,34 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim()
 
+    // Check if supabase is configured
+    if (!supabase || !supabase.from) {
+      console.error('Supabase client not initialized')
+      return NextResponse.json(
+        { error: 'Service temporarily unavailable. Please try again.' },
+        { status: 503 }
+      )
+    }
+
     // Attempt to insert subscriber directly (without select to avoid RLS issues)
-    const { error, data: insertData } = await supabase
-      .from('subscribers')
-      .insert({
-        email: normalizedEmail,
-        name: name?.trim() || null,
-        source: source || 'coming-soon-page',
-      })
-      .catch((err: any) => {
-        console.error('Supabase insert catch error:', err)
-        return { error: err, data: null }
-      })
+    let response
+    try {
+      response = await supabase
+        .from('subscribers')
+        .insert({
+          email: normalizedEmail,
+          name: name?.trim() || null,
+          source: source || 'coming-soon-page',
+        })
+    } catch (err: any) {
+      console.error('Supabase connection error:', err.message)
+      return NextResponse.json(
+        { error: 'Unable to connect to database. Please try again.' },
+        { status: 503 }
+      )
+    }
+
+    const { error, data: insertData } = response
 
     // Handle errors
     if (error) {
@@ -195,7 +211,7 @@ export async function POST(request: NextRequest) {
       }
     )
   } catch (error) {
-    console.error('Subscription error:', error)
+    console.error('Subscription handler error:', error)
     return NextResponse.json(
       { error: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }
