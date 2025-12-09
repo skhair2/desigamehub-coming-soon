@@ -64,11 +64,38 @@ export async function POST(request: NextRequest) {
       method: 'connection-pooler',
     })
 
-    // Since pooler doesn't expose REST API, fall back to the original project REST API
-    // We now know DNS is working (pooler resolved), so this should work
-    const restUrl = `${supabaseUrl}/rest/v1/subscribers`
+    // Work around DNS resolution issues by using IP address directly
+    // First, try to resolve the domain to an IP
+    const { resolve4 } = await import('dns').then(m => ({ 
+      resolve4: m.resolve4 
+    })).catch(() => ({ resolve4: null }))
 
-    console.log('Using project REST API endpoint:', {
+    let restUrl = `${supabaseUrl}/rest/v1/subscribers`
+
+    // If DNS resolution available, try to get the IP
+    if (resolve4) {
+      try {
+        const ips = await new Promise<string[]>((resolve, reject) => {
+          resolve4('mfdycgjdaxygpxyxnfuq.supabase.co', (err, addresses) => {
+            if (err) reject(err)
+            else resolve(addresses)
+          })
+        })
+        if (ips.length > 0) {
+          // Use IP directly instead of hostname to bypass DNS issues
+          restUrl = `https://${ips[0]}/rest/v1/subscribers`
+          console.log('Resolved to IP:', { ip: ips[0], timestamp: new Date().toISOString() })
+        }
+      } catch (dnsError) {
+        console.log('DNS resolution failed, using hostname', { 
+          error: (dnsError as any)?.message,
+          timestamp: new Date().toISOString() 
+        })
+        // Fall back to using hostname
+      }
+    }
+
+    console.log('Using REST endpoint:', {
       url: restUrl,
       timestamp: new Date().toISOString(),
     })
@@ -86,6 +113,7 @@ export async function POST(request: NextRequest) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Host': 'mfdycgjdaxygpxyxnfuq.supabase.co',
           'apikey': supabaseKey,
           'Authorization': `Bearer ${supabaseKey}`,
           'Prefer': 'return=representation',
